@@ -11,15 +11,19 @@ import (
 )
 
 type Router struct {
-	router         *gin.Engine
+	home           *gin.Engine
+	router         *gin.RouterGroup
 	pool           *pgxpool.Pool
 	redis          *redis.Client
 	allowedOrigins []string
-	as             *controller.AuthContorller
 	m              *middleware.Middleware
+	ac             *controller.AuthContorller
+	lc             *controller.LinksControl
 }
 
 func NewRouter(router *gin.Engine, pool *pgxpool.Pool, redis *redis.Client, allowedOrigins []string) *Router {
+
+	api := router.Group("api")
 
 	m := middleware.InitMiddleware(pool, redis, allowedOrigins)
 
@@ -27,13 +31,19 @@ func NewRouter(router *gin.Engine, pool *pgxpool.Pool, redis *redis.Client, allo
 	as := services.NewAuthService(ar, redis)
 	ac := controller.NewAuthContorller(as)
 
+	lr := repository.NewLinkRepo(pool)
+	ls := services.NewLinksService(lr)
+	lc := controller.NewLinksControl(ls)
+
 	return &Router{
-		router:         router,
+		router:         api,
 		pool:           pool,
 		redis:          redis,
 		allowedOrigins: allowedOrigins,
-		as:             ac,
 		m:              m,
+		ac:             ac,
+		lc:             lc,
+		home:           router,
 	}
 }
 
@@ -41,4 +51,5 @@ func (r *Router) Connect() {
 	r.StatusServer()
 	r.Swagger()
 	r.AuthRouter()
+	r.LinksRouter()
 }

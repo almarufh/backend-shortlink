@@ -36,7 +36,7 @@ func (ar *AuthRepo) RegisterAR(c context.Context, body dto.RegisterRequest) (err
 		if errors.As(err, &repoErr) {
 			code, msg := repoErr.Code, repoErr.ConstraintName
 			log.Printf("code : %s\nmessage : %s", code, msg)
-			if code == "23505" && msg == "accounts_email_key" {
+			if code == "23505" && msg == "users_email_key" {
 				log.Printf("code : %s\nmessage : %s cek", code, msg)
 				return message.ErrEmailExist
 			}
