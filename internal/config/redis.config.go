@@ -31,10 +31,10 @@ func (r *Redis) Connect() *redis.Client {
 		Addr:     fmt.Sprintf("%s:%s", r.HOST, r.PORT),
 	})
 
-	if res, err := redis.Ping(context.Background()).Result(); err != nil {
+	if _, err := redis.Ping(context.Background()).Result(); err != nil {
 		log.Printf("Close Redis : %s\n\n", err.Error())
 	} else {
-		log.Printf("%s ! Conected redis successfully\n\n", res)
+		log.Println("Conected redis successfully")
 
 	}
 	return redis

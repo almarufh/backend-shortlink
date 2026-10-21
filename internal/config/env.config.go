@@ -41,7 +41,7 @@ func LoadEnv() *Env {
 			HOST: os.Getenv("REDIS_HOST"),
 			PORT: os.Getenv("REDIS_PORT"),
 			USER: os.Getenv("REDIS_USER"),
-			PWD:  os.Getenv("REDIS_PASWORD"),
+			PWD:  os.Getenv("REDIS_PASSWORD"),
 		},
 		ALLOWED_ORIGINS: allowedOrigins,
 	}
