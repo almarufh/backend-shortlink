@@ -12,7 +12,6 @@ type Env struct {
 	PORT            string
 	POSTGRES        *Postgres
 	ALLOWED_ORIGINS []string
-	ALLOWED_IP      []string
 	REDIS           *Redis
 }
 

@@ -7,16 +7,18 @@ import (
 )
 
 type Router struct {
-	router *gin.Engine
-	pool   *pgxpool.Pool
-	redis  *redis.Client
+	router         *gin.Engine
+	pool           *pgxpool.Pool
+	redis          *redis.Client
+	allowedOrigins []string
 }
 
-func NewRouter(router *gin.Engine, pool *pgxpool.Pool, redis *redis.Client) *Router {
+func NewRouter(router *gin.Engine, pool *pgxpool.Pool, redis *redis.Client, allowedOrigins []string) *Router {
 	return &Router{
-		router: router,
-		pool:   pool,
-		redis:  redis,
+		router:         router,
+		pool:           pool,
+		redis:          redis,
+		allowedOrigins: allowedOrigins,
 	}
 }
 
