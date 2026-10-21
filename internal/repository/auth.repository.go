@@ -7,6 +7,7 @@ import (
 
 	"github.com/almarufh/backend-shortlink/internal/dto"
 	message "github.com/almarufh/backend-shortlink/internal/messages"
+	"github.com/almarufh/backend-shortlink/internal/models"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -47,4 +48,26 @@ func (ar *AuthRepo) RegisterAR(c context.Context, body dto.RegisterRequest) (err
 		return message.ErrNoRowAffected
 	}
 	return nil
+}
+
+func (ar *AuthRepo) GetUserByEmail(c context.Context, body dto.LoginRequest) (*models.Users, error) {
+	query := `
+		SELECT
+			id,
+		    password
+		FROM users
+		WHERE email = $1
+    `
+	var user models.Users
+	err := ar.db.QueryRow(c, query, body.Email).Scan(
+		&user.ID,
+		&user.Password,
+	)
+
+	if err != nil {
+		log.Printf("[AuthRepo.GetUserByEmail] QueryRow : %s", err)
+		return nil, message.ErrEmailNotExist
+	}
+
+	return &user, nil
 }

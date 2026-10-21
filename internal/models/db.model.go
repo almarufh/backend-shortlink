@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Users struct {
-	ID         int64      `db:"id"`
+	ID         int32      `db:"id"`
 	Name       string     `db:"name"`
 	ImageURL   *string    `db:"image_url"`
 	Email      string     `db:"email"`
@@ -15,7 +15,7 @@ type Users struct {
 
 type Links struct {
 	ID          int64      `db:"id"`
-	UserID      int64      `db:"user_id"`
+	UserID      int32      `db:"user_id"`
 	OriginalURL string     `db:"original_url"`
 	ShortURL    string     `db:"short_url"`
 	IsCustom    bool       `db:"is_custom"`

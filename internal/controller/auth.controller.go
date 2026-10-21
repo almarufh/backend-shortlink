@@ -87,3 +87,54 @@ func (ac *AuthContorller) RegisterAC(c *gin.Context) {
 		Message: "register successfully",
 	})
 }
+
+// Login
+//
+// @Summary			Log In
+// @Description		Log in for get full access
+// @Tags			Auth
+// @Accept			json
+// @Produce			json
+// @Router			/auth/login	[post]
+// @Param			body	body 		dto.LoginRequest true "Body data to access ewalet"
+// @Success			200		{object}	dto.ResponseSuccess
+// @Failure			400		{object}	dto.ResponseError
+func (ac *AuthContorller) LoginAC(c *gin.Context) {
+	var body dto.LoginRequest
+	if err := c.ShouldBindWith(&body, binding.JSON); err != nil {
+		log.Printf("[AuthContorller.LoginAC] Bind error: %v\n", err.Error())
+		found, isErr := errors.AsType[validator.ValidationErrors](err)
+		if isErr {
+			err := utils.ValidationError(found)
+			c.JSON(http.StatusBadRequest, dto.ResponseError{
+				Success: false,
+				Message: err,
+			})
+			return
+		}
+	}
+
+	res, err := ac.as.LoginAS(c.Request.Context(), body)
+	if err != nil {
+		log.Printf("[AuthContorller.LoginAS] Bind error: %v\n", err.Error())
+		if errors.Is(err, message.ErrEmailExist) {
+			c.JSON(http.StatusBadRequest, dto.ResponseError{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, dto.ResponseError{
+			Success: false,
+			Message: message.ErrInternal.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, dto.ResponseSuccess{
+		Success: true,
+		Message: "login successfully",
+		Data:    res,
+	})
+}
