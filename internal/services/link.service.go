@@ -3,6 +3,8 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
+	"os"
 
 	"github.com/almarufh/backend-shortlink/internal/dto"
 	message "github.com/almarufh/backend-shortlink/internal/messages"
@@ -54,4 +56,27 @@ func (ls *LinksService) GetOriginalURLService(ctx context.Context, shortURL stri
 	}
 
 	return link, nil
+}
+
+func (ls *LinksService) GetMyLinksService(ctx context.Context, userID int32) (*dto.MyLinksResponse, error) {
+	links, err := ls.lr.GetMyLinksRepo(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	results := make([]dto.Links, 0, len(*links))
+
+	for _, link := range *links {
+		slug := fmt.Sprintf("http://%s:%s/%s", os.Getenv("HOST_SWAGG"), os.Getenv("PORT_SWAGG"), link.ShortURL)
+		results = append(results, dto.Links{
+			LinksID:     link.ID,
+			OriginalURL: link.OriginalURL,
+			ShortURL:    slug,
+			Slug:        link.ShortURL,
+		})
+	}
+
+	return &dto.MyLinksResponse{
+		Data: results,
+	}, nil
 }

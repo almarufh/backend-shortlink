@@ -7,6 +7,8 @@ import (
 
 	"github.com/almarufh/backend-shortlink/internal/dto"
 	message "github.com/almarufh/backend-shortlink/internal/messages"
+	"github.com/almarufh/backend-shortlink/internal/models"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -53,7 +55,7 @@ func (lr *LinkRepo) GetOriginalURLrepo(c context.Context, shortURL string) (*str
 	query := `
 		SELECT original_url
 		FROM links
-		WHERE short_url = $1
+		WHERE short_url = $1 AND deleted_at IS NULL
 	`
 	var links string
 	err := lr.db.QueryRow(c, query, shortURL).Scan(
@@ -61,9 +63,53 @@ func (lr *LinkRepo) GetOriginalURLrepo(c context.Context, shortURL string) (*str
 	)
 
 	if err != nil {
-		log.Printf("[AuthRepo.GetUserByEmail] QueryRow : %s", err)
+		log.Printf("[GetOriginalURLrepo] QueryRow : %s", err)
 		return nil, message.ErrShortLinkNotExist
 	}
 
+	return &links, nil
+}
+
+func (lr *LinkRepo) GetMyLinksRepo(c context.Context, userId int32) (*[]models.Links, error) {
+	query := `
+		SELECT 
+		    id,
+		    original_url,
+		    short_url
+		FROM links
+		WHERE user_id = $1 AND deleted_at IS NULL
+		ORDER BY created_at DESC
+	`
+	rows, err := lr.db.Query(c, query, userId)
+	if err != nil {
+		log.Printf("[GetMyLinksRepo] Query : %s", err.Error())
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, err
+		}
+		return nil, message.ErrInternal
+	}
+
+	defer rows.Close()
+
+	links := make([]models.Links, 0)
+
+	for rows.Next() {
+		var link models.Links
+		err := rows.Scan(
+			&link.ID,
+			&link.OriginalURL,
+			&link.ShortURL,
+		)
+		if err != nil {
+			log.Printf("[GetMyLinksRepo] rows.Next : %s", err.Error())
+			return nil, message.ErrFailedQuery
+		}
+		links = append(links, link)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Printf("[GetMyLinksRepo] rows.Err : %s", err.Error())
+		return nil, message.ErrReadRow
+	}
 	return &links, nil
 }

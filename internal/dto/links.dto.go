@@ -11,3 +11,19 @@ type LinksResponse struct {
 	OriginalURL string  `json:"original_url" example:"https://example.com/long-url-path"`
 	ShortURL    *string `json:"short_url,omitempty" example:"x7K9aL"`
 }
+
+type Links struct {
+	LinksID     int64  `json:"id" db:"id"`
+	OriginalURL string `json:"original_url" db:"original_url"`
+	ShortURL    string `json:"short_url" db:"short_url"`
+	Slug        string `json:"slug" db:"slug"`
+}
+
+type MyLinksResponse struct {
+	Data []Links `json:"data"`
+}
+
+type MyLinksRequest struct {
+	UserID   int64  `form:"-"`
+	ShortURL string `form:"short_url"`
+}

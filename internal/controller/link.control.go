@@ -24,7 +24,7 @@ func NewLinksControl(ls *services.LinksService) *LinksControl {
 	}
 }
 
-// CreateShortURLcontrol membuat short link baru
+// Create ShortURL
 //
 // @Summary         Create New Short Link
 // @Description     Create new short link for authenticated user
@@ -55,7 +55,7 @@ func (lc *LinksControl) CreateShortURLcontrol(c *gin.Context) {
 
 	res, exist := c.Get("ID")
 	if !exist {
-		log.Printf("[LogoutAC.Get ID] Error get token from redis")
+		log.Printf("[CreateShortURLcontrol] Error get token from redis")
 		c.JSON(http.StatusInternalServerError, dto.ResponseError{
 			Success: false,
 			Message: message.ErrInternal.Error(),
@@ -65,7 +65,7 @@ func (lc *LinksControl) CreateShortURLcontrol(c *gin.Context) {
 
 	userID, ok := res.(int32)
 	if !ok {
-		log.Printf("[LogoutAC.res] Error change to string")
+		log.Printf("[CreateShortURLcontrol] Error change to string")
 		c.JSON(http.StatusInternalServerError, dto.ResponseError{
 			Success: false,
 			Message: message.ErrInternal.Error(),
@@ -74,8 +74,8 @@ func (lc *LinksControl) CreateShortURLcontrol(c *gin.Context) {
 	}
 	body.UserID = userID
 
-	if err := lc.ls.CreateShortURLservice(c, body); err != nil {
-		log.Printf("[LogoutAC.res] Error change to string")
+	if err := lc.ls.CreateShortURLservice(c.Request.Context(), body); err != nil {
+		log.Printf("[CreateShortURLcontrol] Error change to string")
 		c.JSON(http.StatusInternalServerError, dto.ResponseError{
 			Success: false,
 			Message: err.Error(),
@@ -121,4 +121,52 @@ func (lc *LinksControl) RedirectControl(c *gin.Context) {
 	}
 
 	c.Redirect(http.StatusFound, *originalURL)
+}
+
+// Get MyLinks
+//
+// @Summary         Get My Short Link
+// @Description     Get My short link for authenticated user
+// @Tags            Links
+// @Produce         json
+// @Security		Bearer
+// @Router          /api/links  [get]
+// @Success         200     {object}    dto.ResponseSuccess
+// @Failure         400     {object}    dto.ResponseError
+// @Failure         500     {object}    dto.ResponseError
+func (lc *LinksControl) GetMyLinksControl(c *gin.Context) {
+	res, exist := c.Get("ID")
+	if !exist {
+		log.Printf("[GetMyLinksControl] Error get token from redis")
+		c.JSON(http.StatusInternalServerError, dto.ResponseError{
+			Success: false,
+			Message: message.ErrInternal.Error(),
+		})
+		return
+	}
+
+	userID, ok := res.(int32)
+	if !ok {
+		log.Printf("[LogoutAC.res] Error change to string")
+		c.JSON(http.StatusInternalServerError, dto.ResponseError{
+			Success: false,
+			Message: message.ErrInternal.Error(),
+		})
+		return
+	}
+
+	res, err := lc.ls.GetMyLinksService(c.Request.Context(), userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, dto.ResponseError{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, dto.ResponseSuccess{
+		Success: true,
+		Message: "get my links successfully",
+		Data:    res,
+	})
 }
