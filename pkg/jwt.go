@@ -19,7 +19,7 @@ type JWTClaims struct {
 	jwt.RegisteredClaims
 }
 
-func NewJWTClaims(user_id int32, role string, expired int) *JWTClaims {
+func NewJWTClaims(user_id int32, expired int) *JWTClaims {
 	return &JWTClaims{
 		ID:        user_id,
 		Issuer:    os.Getenv("JWT_ISSUER"),
