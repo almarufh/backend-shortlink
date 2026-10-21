@@ -28,8 +28,8 @@ func LoadEnv() *Env {
 	}
 
 	return &Env{
-		HOST: os.Getenv("HOST"),
-		PORT: os.Getenv("PORT"),
+		HOST: os.Getenv("HOST_SERVER"),
+		PORT: os.Getenv("PORT_SERVER"),
 		POSTGRES: &Postgres{
 			User:     os.Getenv("POSTGRES_USER"),
 			Password: os.Getenv("POSTGRES_PASSWORD"),
