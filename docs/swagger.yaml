@@ -77,6 +77,25 @@ paths:
       summary: Log In
       tags:
       - Auth
+  /auth/logout:
+    delete:
+      description: Log out for delete access user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ResponseSuccess'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseError'
+      security:
+      - Bearer: []
+      summary: Log out
+      tags:
+      - Auth
   /auth/register:
     post:
       consumes:

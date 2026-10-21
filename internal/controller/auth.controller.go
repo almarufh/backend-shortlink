@@ -138,3 +138,49 @@ func (ac *AuthContorller) LoginAC(c *gin.Context) {
 		Data:    res,
 	})
 }
+
+// Logout
+//
+// @Summary			Log out
+// @Description		Log out for delete access user
+// @Tags			Auth
+// @Produce			json
+// @Security		Bearer
+// @Router			/auth/logout	[delete]
+// @Success			200		{object}	dto.ResponseSuccess
+// @Failure			400		{object}	dto.ResponseError
+func (ac *AuthContorller) LogoutAC(c *gin.Context) {
+	res, exist := c.Get("ID")
+	if !exist {
+		log.Printf("[LogoutAC.Get ID] Error get token from redis")
+		c.JSON(http.StatusInternalServerError, dto.ResponseError{
+			Success: false,
+			Message: message.ErrInternal.Error(),
+		})
+		return
+	}
+
+	userID, ok := res.(int32)
+	if !ok {
+		log.Printf("[LogoutAC.res] Error change to string")
+		c.JSON(http.StatusInternalServerError, dto.ResponseError{
+			Success: false,
+			Message: message.ErrInternal.Error(),
+		})
+		return
+	}
+
+	err := ac.as.LogoutAS(c.Request.Context(), userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, dto.ResponseError{
+			Success: false,
+			Message: message.ErrInternal.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, dto.ResponseSuccess{
+		Success: true,
+		Message: "successfully logout ",
+	})
+}

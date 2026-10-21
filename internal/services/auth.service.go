@@ -74,3 +74,15 @@ func (as *AuthService) LoginAS(c context.Context, body dto.LoginRequest) (*dto.L
 		Token: token,
 	}, nil
 }
+
+func (as *AuthService) LogoutAS(c context.Context, userID int32) (err error) {
+	key := fmt.Sprintf("ewallet:token:%d", userID)
+
+	err = as.redis.Del(c, key).Err()
+	if err != nil {
+		log.Printf("[AuthService.Logout] Gagal menghapus key Redis: %v", err)
+		return err
+	}
+
+	return nil
+}

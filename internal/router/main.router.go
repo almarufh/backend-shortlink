@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/almarufh/backend-shortlink/internal/controller"
+	"github.com/almarufh/backend-shortlink/internal/middleware"
 	"github.com/almarufh/backend-shortlink/internal/repository"
 	"github.com/almarufh/backend-shortlink/internal/services"
 	"github.com/gin-gonic/gin"
@@ -15,9 +16,12 @@ type Router struct {
 	redis          *redis.Client
 	allowedOrigins []string
 	as             *controller.AuthContorller
+	m              *middleware.Middleware
 }
 
 func NewRouter(router *gin.Engine, pool *pgxpool.Pool, redis *redis.Client, allowedOrigins []string) *Router {
+
+	m := middleware.InitMiddleware(pool, redis, allowedOrigins)
 
 	ar := repository.NewAuthRepo(pool)
 	as := services.NewAuthService(ar, redis)
@@ -29,6 +33,7 @@ func NewRouter(router *gin.Engine, pool *pgxpool.Pool, redis *redis.Client, allo
 		redis:          redis,
 		allowedOrigins: allowedOrigins,
 		as:             ac,
+		m:              m,
 	}
 }
 
