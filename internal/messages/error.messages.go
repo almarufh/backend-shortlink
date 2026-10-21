@@ -23,3 +23,5 @@ var ErrInternal = errors.New("internal service error")
 // LINKS
 var ErrShortLinkExist = errors.New("short link exist")
 var ErrShortLinkNotExist = errors.New("short link exist")
+var ErrFailedQuery = errors.New("failed execute query")
+var ErrReadRow = errors.New("failed read row")

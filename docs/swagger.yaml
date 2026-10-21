@@ -67,7 +67,7 @@ info:
   title: Application ShortLink App
   version: "1.0"
 paths:
-  /{short_url}:
+  /{slug}:
     get:
       description: Redirect user to the original URL by short_url slug
       parameters:
@@ -90,7 +90,7 @@ paths:
       summary: Redirect Short Link
       tags:
       - Redirect
-  /auth/login:
+  /api/auth/login:
     post:
       consumes:
       - application/json
@@ -116,7 +116,7 @@ paths:
       summary: Log In
       tags:
       - Auth
-  /auth/logout:
+  /api/auth/logout:
     delete:
       description: Log out for delete access user
       produces:
@@ -135,7 +135,7 @@ paths:
       summary: Log out
       tags:
       - Auth
-  /auth/register:
+  /api/auth/register:
     post:
       consumes:
       - application/json
@@ -169,7 +169,29 @@ paths:
       summary: Create New Account
       tags:
       - Auth
-  /links:
+  /api/links:
+    get:
+      description: Get My short link for authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ResponseSuccess'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ResponseError'
+      security:
+      - Bearer: []
+      summary: Get My Short Link
+      tags:
+      - Links
     post:
       consumes:
       - application/json

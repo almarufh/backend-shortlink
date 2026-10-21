@@ -6,5 +6,5 @@ import (
 )
 
 func (r *Router) Swagger() {
-	r.router.GET("/docs/api/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }
