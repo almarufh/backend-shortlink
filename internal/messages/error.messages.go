@@ -19,3 +19,7 @@ var ErrNoRowAffected = errors.New("no rows affected")
 
 // Controller
 var ErrInternal = errors.New("internal service error")
+
+// LINKS
+var ErrShortLinkExist = errors.New("short link exist")
+var ErrShortLinkNotExist = errors.New("short link exist")

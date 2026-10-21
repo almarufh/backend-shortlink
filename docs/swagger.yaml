@@ -1,5 +1,21 @@
 basePath: /
 definitions:
+  dto.LinksRequest:
+    properties:
+      is_custom:
+        example: false
+        type: boolean
+      original_url:
+        example: https://example.com/long-url-path
+        type: string
+      short_url:
+        example: my-custom-slug
+        maxLength: 20
+        minLength: 3
+        type: string
+    required:
+    - original_url
+    type: object
   dto.LoginRequest:
     properties:
       email:
@@ -51,6 +67,29 @@ info:
   title: Application ShortLink App
   version: "1.0"
 paths:
+  /{short_url}:
+    get:
+      description: Redirect user to the original URL by short_url slug
+      parameters:
+      - description: Short URL slug
+        in: path
+        name: short_url
+        required: true
+        type: string
+      responses:
+        "302":
+          description: Redirect to original URL
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ResponseError'
+      summary: Redirect Short Link
+      tags:
+      - Redirect
   /auth/login:
     post:
       consumes:
@@ -130,6 +169,42 @@ paths:
       summary: Create New Account
       tags:
       - Auth
+  /links:
+    post:
+      consumes:
+      - application/json
+      description: Create new short link for authenticated user
+      parameters:
+      - description: Body data create short link
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LinksRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ResponseSuccess'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ResponseError'
+      security:
+      - Bearer: []
+      summary: Create New Short Link
+      tags:
+      - Links
 securityDefinitions:
   Bearer:
     description: Bearer Token used as identity for accessing backend

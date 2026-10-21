@@ -131,9 +131,123 @@
                     }
                 }
             }
+        },
+        "/links": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create new short link for authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Links"
+                ],
+                "summary": "Create New Short Link",
+                "parameters": [
+                    {
+                        "description": "Body data create short link",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LinksRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseError"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/{short_url}": {
+            "get": {
+                "description": "Redirect user to the original URL by short_url slug",
+                "tags": [
+                    "Redirect"
+                ],
+                "summary": "Redirect Short Link",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Short URL slug",
+                        "name": "short_url",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Redirect to original URL"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "dto.LinksRequest": {
+            "type": "object",
+            "required": [
+                "original_url"
+            ],
+            "properties": {
+                "is_custom": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "original_url": {
+                    "type": "string",
+                    "example": "https://example.com/long-url-path"
+                },
+                "short_url": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 3,
+                    "example": "my-custom-slug"
+                }
+            }
+        },
         "dto.LoginRequest": {
             "type": "object",
             "required": [

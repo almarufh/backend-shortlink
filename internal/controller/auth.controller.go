@@ -31,7 +31,7 @@ func NewAuthContorller(as *services.AuthService) *AuthContorller {
 // @Tags			Auth
 // @Accept			json
 // @Produce			json
-// @Router			/auth/register	[post]
+// @Router			/api/auth/register	[post]
 // @Param			body	body 		dto.RegisterRequest true "Body data new user"
 // @Success			200		{object}	dto.ResponseSuccess
 // @Failure			400		{object}	dto.ResponseError
@@ -95,7 +95,7 @@ func (ac *AuthContorller) RegisterAC(c *gin.Context) {
 // @Tags			Auth
 // @Accept			json
 // @Produce			json
-// @Router			/auth/login	[post]
+// @Router			/api/auth/login	[post]
 // @Param			body	body 		dto.LoginRequest true "Body data to access ewalet"
 // @Success			200		{object}	dto.ResponseSuccess
 // @Failure			400		{object}	dto.ResponseError
@@ -146,7 +146,7 @@ func (ac *AuthContorller) LoginAC(c *gin.Context) {
 // @Tags			Auth
 // @Produce			json
 // @Security		Bearer
-// @Router			/auth/logout	[delete]
+// @Router			/api/auth/logout	[delete]
 // @Success			200		{object}	dto.ResponseSuccess
 // @Failure			400		{object}	dto.ResponseError
 func (ac *AuthContorller) LogoutAC(c *gin.Context) {
