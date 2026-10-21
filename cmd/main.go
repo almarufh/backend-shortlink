@@ -5,12 +5,23 @@ import (
 	"log"
 	"os"
 
+	"github.com/almarufh/backend-shortlink/docs"
 	"github.com/almarufh/backend-shortlink/internal/config"
 	"github.com/almarufh/backend-shortlink/internal/router"
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/swag/example/basic/docs"
 )
 
+// @title           			Application ShortLink App
+// @version         			1.0
+// @description     			This is a sample send request use API.
+
+// @host      					localhost:5000
+// @BasePath  					/
+
+// @securityDefinitions.apikey	Bearer
+// @in							header
+// @name						Authorization
+// @description					Bearer Token used as identity for accessing backend
 func main() {
 	// ENV
 	conf := config.LoadEnv()
