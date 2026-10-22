@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -8,6 +9,7 @@ import (
 
 func (m *Middleware) Cors(c *gin.Context) {
 	for _, o := range m.allowedOrigins {
+		fmt.Println("Origin : ", c.GetHeader("Origin"))
 		if c.GetHeader("Origin") == o {
 			c.Header("Access-Control-Allow-Origin", o)
 		}

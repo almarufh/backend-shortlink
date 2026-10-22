@@ -117,7 +117,7 @@ func (ac *AuthContorller) LoginAC(c *gin.Context) {
 	res, err := ac.as.LoginAS(c.Request.Context(), body)
 	if err != nil {
 		log.Printf("[AuthContorller.LoginAS] Bind error: %v\n", err.Error())
-		if errors.Is(err, message.ErrEmailExist) {
+		if errors.Is(err, message.ErrEmailExist) || errors.Is(err, message.ErrEmailNotExist) {
 			c.JSON(http.StatusBadRequest, dto.ResponseError{
 				Success: false,
 				Message: err.Error(),

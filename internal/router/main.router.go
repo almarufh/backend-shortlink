@@ -22,10 +22,9 @@ type Router struct {
 }
 
 func NewRouter(router *gin.Engine, pool *pgxpool.Pool, redis *redis.Client, allowedOrigins []string) *Router {
-
-	api := router.Group("api")
-
 	m := middleware.InitMiddleware(pool, redis, allowedOrigins)
+	router.Use(m.Cors)
+	api := router.Group("api")
 
 	ar := repository.NewAuthRepo(pool)
 	as := services.NewAuthService(ar, redis)
@@ -48,7 +47,6 @@ func NewRouter(router *gin.Engine, pool *pgxpool.Pool, redis *redis.Client, allo
 }
 
 func (r *Router) Connect() {
-	r.StatusServer()
 	r.Swagger()
 	r.AuthRouter()
 	r.LinksRouter()

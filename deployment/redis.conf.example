@@ -1,0 +1,31 @@
+# --- NETWORK SETTINGS ---
+bind 0.0.0.0
+port 6379
+protected-mode yes
+timeout 300
+tcp-keepalive 300
+
+# --- GENERAL & LOGGING ---
+daemonize no
+loglevel notice
+logfile ""
+
+# --- MEMORY MANAGEMENT ---
+maxmemory 200mb
+maxmemory-policy allkeys-lru
+
+# --- USER MANAGEMENT & SECURITY (ACL) ---
+user default off
+user {yuor_name_user} on >{your_redis_admin_password} ~* +@all
+
+# --- PERSISTENCE (RDB) ---
+save 900 1
+save 300 10
+save 60 10000
+dbfilename dump.rdb
+rdbcompression yes
+
+# --- PERSISTENCE (AOF) ---
+appendonly yes
+appendfilename "appendonly.aof"
+dir /data

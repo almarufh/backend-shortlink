@@ -14,7 +14,7 @@ var ErrTokenExpired = errors.New("session expired, please login again")
 
 // AUTH
 var ErrEmailExist = errors.New("email alredy exist")
-var ErrEmailNotExist = errors.New("email alredy exist")
+var ErrEmailNotExist = errors.New("account not found")
 var ErrNoRowAffected = errors.New("no rows affected")
 
 // Controller
