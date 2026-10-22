@@ -94,7 +94,7 @@ func (lc *LinksControl) CreateShortURLcontrol(c *gin.Context) {
 // @Summary         Redirect Short Link
 // @Description     Redirect user to the original URL by short_url slug
 // @Tags            Redirect
-// @Param           short_url    path        string    true    "Short URL slug"
+// @Param           slug    path        string    true    "Short URL slug"
 // @Router          /{slug} [get]
 // @Success         302          "Redirect to original URL"
 // @Failure         404          {object}    dto.ResponseError
@@ -168,5 +168,62 @@ func (lc *LinksControl) GetMyLinksControl(c *gin.Context) {
 		Success: true,
 		Message: "get my links successfully",
 		Data:    res,
+	})
+}
+
+// Delete Link
+//
+// @Summary         Delete Link
+// @Description     Delete Link for authenticated user
+// @Tags            Links
+// @Produce         json
+// @Security		Bearer
+// @Param           slug    path        string    true    "Short URL slug"
+// @Router          /api/links/{slug}   [delete]
+// @Success         200     {object}    dto.ResponseSuccess
+// @Failure         400     {object}    dto.ResponseError
+// @Failure         500     {object}    dto.ResponseError
+func (lc *LinksControl) DelLinkRControl(c *gin.Context) {
+	shortURL := c.Param("slug")
+	if shortURL == "" {
+		c.JSON(http.StatusBadRequest, dto.ResponseError{
+			Success: false,
+			Message: "Slug short URL tidak boleh kosong",
+		})
+		return
+	}
+
+	res, exist := c.Get("ID")
+	if !exist {
+		log.Printf("[GetMyLinksControl] Error get token from redis")
+		c.JSON(http.StatusInternalServerError, dto.ResponseError{
+			Success: false,
+			Message: message.ErrInternal.Error(),
+		})
+		return
+	}
+
+	userID, ok := res.(int32)
+	if !ok {
+		log.Printf("[LogoutAC.res] Error change to string")
+		c.JSON(http.StatusInternalServerError, dto.ResponseError{
+			Success: false,
+			Message: message.ErrInternal.Error(),
+		})
+		return
+	}
+
+	err := lc.ls.DelLinkService(c.Request.Context(), userID, shortURL)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, dto.ResponseError{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, dto.ResponseSuccess{
+		Success: true,
+		Message: "delete links successfully",
 	})
 }

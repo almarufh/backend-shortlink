@@ -230,6 +230,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/links/{slug}": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete Link for authenticated user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Links"
+                ],
+                "summary": "Delete Link",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Short URL slug",
+                        "name": "slug",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/{slug}": {
             "get": {
                 "description": "Redirect user to the original URL by short_url slug",
@@ -241,7 +287,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Short URL slug",
-                        "name": "short_url",
+                        "name": "slug",
                         "in": "path",
                         "required": true
                     }

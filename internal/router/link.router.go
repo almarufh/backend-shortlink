@@ -5,5 +5,6 @@ func (r *Router) LinksRouter() {
 
 	link := r.router.Group("links")
 	link.POST("", r.m.AuthMiddlewarer, r.lc.CreateShortURLcontrol)
+	link.DELETE("/:slug", r.m.AuthMiddlewarer, r.lc.DelLinkRControl)
 	link.GET("", r.m.AuthMiddlewarer, r.lc.GetMyLinksControl)
 }

@@ -73,7 +73,7 @@ paths:
       parameters:
       - description: Short URL slug
         in: path
-        name: short_url
+        name: slug
         required: true
         type: string
       responses:
@@ -225,6 +225,35 @@ paths:
       security:
       - Bearer: []
       summary: Create New Short Link
+      tags:
+      - Links
+  /api/links/{slug}:
+    delete:
+      description: Delete Link for authenticated user
+      parameters:
+      - description: Short URL slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ResponseSuccess'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ResponseError'
+      security:
+      - Bearer: []
+      summary: Delete Link
       tags:
       - Links
 securityDefinitions:

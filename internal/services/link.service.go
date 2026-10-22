@@ -80,3 +80,12 @@ func (ls *LinksService) GetMyLinksService(ctx context.Context, userID int32) (*d
 		Data: results,
 	}, nil
 }
+
+func (ls *LinksService) DelLinkService(c context.Context, userID int32, short_url string) (err error) {
+	err = ls.lr.DelLinkRepo(c, userID, short_url)
+	if err != nil {
+		return err
+	}
+
+	return
+}
