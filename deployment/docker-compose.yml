@@ -1,0 +1,53 @@
+services:
+  postgres:
+    container_name: database
+    image: postgres:18.6-alpine3.24
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres:/var/lib/postgresql/18/docker
+    networks:
+      - app-postgres
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    container_name: cache
+    image: redis:8.10.2-alpine3.23
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: ['redis-server', '/usr/local/etc/redis/redis.conf']
+    networks:
+      - app-redis
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'redis-cli',
+          '-u',
+          'redis://${REDIS_USER}:${REDIS_PASSWORD}@127.0.0.1:6379',
+          'ping',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres:
+  redis:
+
+networks:
+  app-redis:
+    driver: bridge
+  app-postgres:
+    driver: bridge

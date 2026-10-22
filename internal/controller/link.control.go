@@ -102,15 +102,16 @@ func (lc *LinksControl) CreateShortURLcontrol(c *gin.Context) {
 func (lc *LinksControl) RedirectControl(c *gin.Context) {
 	shortURL := c.Param("slug")
 	if shortURL == "" {
-		c.JSON(http.StatusBadRequest, dto.ResponseError{
-			Success: false,
-			Message: "Slug short URL tidak boleh kosong",
-		})
+		c.Redirect(http.StatusFound, "/404")
 		return
 	}
 
 	originalURL, err := lc.ls.GetOriginalURLService(c.Request.Context(), shortURL)
 	if err != nil {
+		if errors.Is(err, message.ErrShortLinkNotExist) {
+			c.Redirect(http.StatusFound, "/404")
+		}
+
 		log.Printf("[RedirectControl.GetOriginalURLService] Error: %v\n", err)
 
 		c.JSON(http.StatusInternalServerError, dto.ResponseError{
