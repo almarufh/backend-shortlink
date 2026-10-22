@@ -113,3 +113,32 @@ func (lr *LinkRepo) GetMyLinksRepo(c context.Context, userId int32) (*[]models.L
 	}
 	return &links, nil
 }
+
+func (lr *LinkRepo) DelLinkRepo(c context.Context, userID int32, short_url string) error {
+	query := `
+		UPDATE links
+		SET deleted_at = NOW()
+		WHERE short_url = $1 AND user_id = $2
+    `
+	tag, err := lr.db.Exec(c, query, short_url, userID)
+	if err != nil {
+		log.Printf("[UserRepo.DeleteHistoryUR] Exec : %s", err)
+		repoErr, ok := errors.AsType[*pgconn.PgError](err)
+		if ok {
+			code, msg := repoErr.Code, repoErr.ConstraintName
+			log.Printf("code : %s\nmessage : %s", code, msg)
+			if code == "23505" && msg == "links_short_url_key" {
+				log.Printf("code : %s\nmessage : %s cek", code, msg)
+				return message.ErrShortLinkNotExist
+			}
+		}
+		return err
+	}
+
+	if tag.RowsAffected() == 0 {
+		log.Printf("[UserRepo.DeleteHistoryUR] RowsAffected : %s", err)
+		return message.ErrNoRowAffected
+	}
+
+	return nil
+}
